@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fluentz Business Process Audit - Dashboard & Action Plan</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-purple: #6B21A8;
+            --primary-purple-dark: #581C87;
+            --primary-purple-light: #A855F7;
+            --accent-gold: #F5B800;
+            --accent-gold-light: #FCD34D;
+            --accent-gold-dark: #D97706;
+            --bg-dark: #1A1A2E;
+            --bg-card: #FFFFFF;
+            --bg-section: #F8FAFC;
+            --text-primary: #1E293B;
+            --text-secondary: #64748B;
+            --text-muted: #94A3B8;
+            --border-light: #E2E8F0;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --error: #EF4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #F5F3FF 0%, #EDE9FE 50%, #FEF3C7 100%);
+            min-height: 100vh;
+            color: var(--text-primary);
+            position: relative;
+        }
+
+        /* Watermark */
+        .watermark {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.75rem;
+            color: var(--primary-purple);
+            opacity: 0.6;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px 16px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(107, 33, 168, 0.1);
+            letter-spacing: 0.5px;
+        }
+
+        .watermark::before {
+            content: "💡";
+            margin-right: 6px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary-purple) 0%, var(--primary-purple-dark) 100%);
+            padding: 32px 40px;
+            border-radius: 24px;
+            margin-bottom: 32px;
+            box-shadow: 0 20px 60px rgba(107, 33, 168, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(245, 184, 0, 0.2) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .header::after {
+            content: "";
+            position: absolute;
+            bottom: -30%;
+            left: -10%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(168, 85, 247, 0.3) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo-text {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: white;
+            letter-spacing: -1px;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-text .f-letter {
+            color: white;
+        }
+
+        .logo-text .dots {
+            display: inline-flex;
+            gap: 3px;
+            margin: 0 2px;
+            align-items: center;
+        }
+
+        .logo-text .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+        }
+
+        .logo-text .dot:nth-child(1) { background: #EC4899; }
+        .logo-text .dot:nth-child(2) { background: var(--accent-gold); }
+        .logo-text .dot:nth-child(3) { background: #3B82F6; }
+
+        .logo-text .uentz {
+            color: var(--accent-gold);
+        }
+
+        .logo-tagline {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-style: italic;
+            margin-top: 4px;
+        }
+
+        .header-info {
+            flex: 1;
+        }
+
+        .header-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-subtitle {
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.85);
+            font-weight: 400;
+        }
+
+        .header-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--accent-gold);
+            color: var(--primary-purple-dark);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 12px;
+        }
+
+        /* Section Cards */
+        .section-card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+            border: 1px solid var(--border-light);
+            transition: all 0.3s ease;
+        }
+
+        .section-card:hover {
+            box-shadow: 0 8px 40px rgba(107, 33, 168, 0.08);
+            transform: translateY(-2px);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--border-light);
+        }
+
+        .section-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary-purple);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title .icon {
+            font-size: 1.5rem;
+        }
+
+        .subsection-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 28px 0 16px 0;
+            padding-left: 12px;
+            border-left: 3px solid var(--accent-gold);
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            margin-bottom: 8px;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .progress-bar {
+            background: var(--bg-section);
+            height: 12px;
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 20px;
+            background: linear-gradient(90deg, var(--primary-purple) 0%, var(--primary-purple-light) 50%, var(--accent-gold) 100%);
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* Checklist Items */
+        .checklist-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 20px 24px;
+            margin-bottom: 12px;
+            background: var(--bg-section);
+            border-radius: 16px;
+            border: 1px solid transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .checklist-item:hover {
+            background: linear-gradient(135deg, #FAF5FF 0%, #FEF9E7 100%);
+            border-color: rgba(107, 33, 168, 0.15);
+            transform: translateX(4px);
+        }
+
+        .checklist-item.completed {
+            background: linear-gradient(135deg, #F0FDF4 0%, #FEF9C3 100%);
+            border-color: rgba(16, 185, 129, 0.2);
+        }
+
+        .checklist-item.completed .item-title {
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
+
+        .checkbox-wrapper {
+            position: relative;
+            margin-right: 16px;
+            margin-top: 2px;
+        }
+
+        .checklist-checkbox {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            accent-color: var(--primary-purple);
+            transform: scale(1.1);
+        }
+
+        .item-content {
+            flex: 1;
+        }
+
+        .item-title {
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .item-detail {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            line-height: 1.6;
+        }
+
+        .item-detail strong {
+            color: var(--primary-purple);
+            font-weight: 600;
+        }
+
+        .item-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .meta-tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+
+        .meta-tag.timeline {
+            background: #DBEAFE;
+            color: #1D4ED8;
+        }
+
+        .meta-tag.obj1 {
+            background: #FEF3C7;
+            color: #B45309;
+        }
+
+        .meta-tag.obj2 {
+            background: #F3E8FF;
+            color: #7C3AED;
+        }
+
+        .meta-tag.investment {
+            background: #D1FAE5;
+            color: #047857;
+        }
+
+        /* Overall Progress Section */
+        .overall-progress {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            margin-top: 16px;
+        }
+
+        .progress-card {
+            background: var(--bg-section);
+            padding: 24px;
+            border-radius: 16px;
+            border: 1px solid var(--border-light);
+        }
+
+        .progress-card h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .progress-card.obj1 h3 { color: var(--accent-gold-dark); }
+        .progress-card.obj2 h3 { color: var(--primary-purple); }
+
+        .progress-stat {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
+
+        /* Results Section */
+        .results-section {
+            margin-top: 32px;
+        }
+
+        .result-card {
+            background: var(--bg-section);
+            padding: 24px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--primary-purple);
+        }
+
+        .result-card.obj1 {
+            border-left-color: var(--primary-purple);
+            background: linear-gradient(135deg, #FAF5FF 0%, #F8FAFC 100%);
+        }
+
+        .result-card.obj2 {
+            border-left-color: var(--accent-gold);
+            background: linear-gradient(135deg, #FFFBEB 0%, #F8FAFC 100%);
+        }
+
+        .result-card.metrics {
+            border-left-color: var(--success);
+            background: linear-gradient(135deg, #F0FDF4 0%, #F8FAFC 100%);
+        }
+
+        .result-card h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .result-card.obj1 h3 { color: var(--primary-purple); }
+        .result-card.obj2 h3 { color: var(--accent-gold-dark); }
+        .result-card.metrics h3 { color: var(--success); }
+
+        .result-textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 16px;
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            background: white;
+            resize: vertical;
+            transition: all 0.3s ease;
+            line-height: 1.7;
+        }
+
+        .result-textarea:focus {
+            outline: none;
+            border-color: var(--primary-purple-light);
+            box-shadow: 0 0 0 4px rgba(107, 33, 168, 0.1);
+        }
+
+        .result-textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 16px;
+            }
+
+            .header {
+                padding: 24px;
+            }
+
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .logo-text {
+                font-size: 2rem;
+            }
+
+            .header-title {
+                font-size: 1.4rem;
+                justify-content: center;
+            }
+
+            .section-card {
+                padding: 20px;
+            }
+
+            .overall-progress {
+                grid-template-columns: 1fr;
+            }
+
+            .checklist-item {
+                padding: 16px;
+            }
+
+            .watermark {
+                font-size: 0.65rem;
+                padding: 6px 12px;
+                bottom: 12px;
+                right: 12px;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+            }
+            
+            .watermark {
+                position: fixed;
+                bottom: 10px;
+                right: 10px;
+                opacity: 0.4;
+            }
+
+            .section-card {
+                break-inside: avoid;
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+        }
+
+        /* Animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-card {
+            animation: fadeInUp 0.5s ease-out forwards;
+        }
+
+        .section-card:nth-child(1) { animation-delay: 0.1s; }
+        .section-card:nth-child(2) { animation-delay: 0.2s; }
+        .section-card:nth-child(3) { animation-delay: 0.3s; }
+        .section-card:nth-child(4) { animation-delay: 0.4s; }
+    </style>
+</head>
+<body>
+    <!-- Watermark -->
+    <div class="watermark">Insight by M Rafli Febrianyah</div>
+
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo-container">
+                    <div>
+                        <div class="logo-text">
+                            <span class="f-letter">F</span><span class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span><span class="uentz">UENTZ</span>
+                        </div>
+                        <div class="logo-tagline">speak fluently</div>
+                    </div>
+                </div>
+                <div class="header-info">
+                    <h1 class="header-title">
+                        <span>✅</span> Action Plan Tracker
+                    </h1>
+                    <p class="header-subtitle">Business Process Audit - Objektif 1 & 2 | Period: February 2026</p>
+                    <div class="header-badge">
+                        <span>👤</span> Consultant: Rave
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Objektif 1 Section -->
+        <section class="section-card">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span class="icon">🎯</span>
+                    OBJEKTIF 1: Review & Perbaikan Proses Bisnis
+                </h2>
+            </div>
+
+            <div class="progress-container">
+                <div class="progress-label">
+                    <span>Progress</span>
+                    <span id="progress1-text">0%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress1" style="width: 0%;"></div>
+                </div>
+            </div>
+
+            <!-- A. Lead Management -->
+            <h3 class="subsection-title">A. Lead Management</h3>
+
+            <div class="checklist-item" data-section="obj1">
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" class="checklist-checkbox" onchange="updateProgress()">
+                </div>
+                <div class="item-content">
+                    <div class="item-title">1. Lead Scoring Framework</div>
+                    <div class="item-detail"><strong>Kecacatan:</strong> Tidak ada sistem kategorisasi leads (hot/warm/cold/spam)</div>
+                    <div class="item-detail"><strong>Perbaikan:</strong> Implement BANT scoring system + qualifying questions script</div>
+                    <div class="item-detail"><strong>Output:</strong> Lead scoring template (Google Sheets)</div>
+                    <div class="item-meta">
+                        <span class="meta-tag timeline">📅 Week 1-2</span>
+                        <span class="meta-tag obj1">Objektif 1</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="checklist-item" data-section="obj1">
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" class="checklist-checkbox" onchange="updateProgress()">
+                </div>
+                <div class="item-content">
+                    <div class="item-title">2. Autotext Revision</div>
+                    <div class="item-detail"><strong>Kecacatan:</strong> Autotext belum terstandarisasi, tidak konsisten antar admin</div>
+                    <div class="item-detail"><strong>Perbaikan:</strong> Benchmark GE Bekasi winning templates, adapt ke Fluentz</div>
+                    <div class="item-detail"><strong>Output:</strong> Autotext library (first response, follow-up, catalog, objection, closing)</div>
+                    <div class="item-meta">
+                        <span class="meta-tag timeline">📅 Week 2</span>
+                        <span class="meta-tag obj1">Objektif 1</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- B. Admin Operations -->
+            <h3 class="subsection-title">B. Admin Operations</h3>
+
+            <div class="checklist-item" data-section="obj1">
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" class="checklist-checkbox" onchange="updateProgress()">
+                </div>
+                <div class="item-content">
+                    <div class="item-title">3. End-to-End SOP Standardization</div>
+                    <div class="item-detail"><strong>Kecacatan:</strong> SOP ada (duplikasi GE) tapi tidak enforced</div>
+                    <div class="item-detail"><strong>Perbaikan:</strong> Dokumentasi ulang SOP GE → Customize untuk Fluentz + formalize handoff checklist</div>
+                    <div class="item-detail"><strong>Output:</strong> Complete SOP document (leads intake → after-sales)</div>
+                    <div class="item-meta">
+                        <span class="meta-tag timeline">📅 Week 3</span>
+                        <span class="meta-tag obj1">Objektif 1</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="checklist-item" data-section="obj1">
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" class="checklist-checkbox" onchange="updateProgress()">
+                </div>
+                <div class="item-content">
+                    <div class="item-title">4. Sales Training Video</div>
+                    <div class="item-detail"><strong>Kecacatan:</strong> Tidak ada standar training untuk sales skill</div>
+                    <div class="item-detail"><strong>Perbaikan:</strong> Record 4-module video (qualification, objection, closing, Bekasi case study)</div>
+                    <div class="item-detail"><strong>Output:</strong> Training video (~60 min) + role-play scripts</div>
+                    <div class="item-meta">
+                        <span class="meta-tag timeline">📅 Week 3-4</span>
+                        <span class="meta-tag obj1">Objektif 1</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="checklist-item" data-section="obj1">
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" class="checklist-checkbox" onchange="updateProgress()">
+                </div>
+                <div class="item-content">
+                    <div class="item-title">5. Weekly SOP Compliance Audit</div>
+                    <div class="item-detail"><strong>Kecacatan:</strong> Tidak ada mekanisme quality control</div>
+                    <div class="item-detail"><strong>Perbaikan:</strong> Weekly spot-check (5 conversations/admin) + monthly performance review</div>
+                    <div class="item-detail"><strong>Output:</strong> Audit checklist + feedback mechanism + monthly scorecard</div>
+                    <div class="item-meta">
+                        <span class="meta-tag timeline">📅 Ongoing (Week 4+)</span>
+                        <span class="meta-tag obj1">Objektif 1</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- C. After-Sales -->
+            <h3 class="subsection-title">C. After-Sales Process</h3>
+
+            <div class="checklist-item" data-section="obj1">
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" class="checklist-checkbox" onchange="updateProgress()">
+                </div>
+                <div class="item-content">
+                    <div class="item-title">6. After-Sales Checklist & SOP</div>
+                    <div class="item-detail"><strong>Kecacatan:</strong> After-sales berjalan ad-hoc, tidak systematic</div>
+                    <div class="item-detail"><strong>Perbaikan:</strong> Structured onboarding (Day 0-30), benefit tracking, handbook balasan English (Khalid)</div>
+                    <div class="item-detail"><strong>Output:</strong> Onboarding checklist + After-sales SOP + Benefit tracker + Handbook</div>
+                    <div class="item-meta">
+                        <span class="meta-tag timeline">📅 Week 3</span>
+                        <span class="meta-tag obj1">Objektif 1</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Objektif 2 Section -->
+        <section class="section-card">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span class="icon">🚀</span>
+                    OBJEKTIF 2: Langkah Scale-Up (Action Plan Only)
+                </h2>
+            </div>
+
+            <div class="progress-container">
+                <div class="progress-label">
+                    <span>Progress</span>
+                    <span id="progress2-text">0%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress2" style="width: 0%;"></div>
+                </div>
+            </div>
+
+            <!-- A. Measurement Infrastructure -->
+            <h3 class="subsection-title">A. Measurement & Tracking Infrastructure</h3>
+
+            <div class="checklist-item" data-section="obj2">
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" class="checklist-checkbox" onchange="updateProgress()">
+                </div>
+                <div class="item-content">
+                    <div class="item-title">1. GASS Lead Tracking Implementation</div>
+                    <div class="item-detail"><strong>Purpose:</strong> Track lead source + measure MQL (5+ bubbles) + identify: bad ads vs weak sales</div>
+                    <div class="item-detail"><strong>Action Plan:</strong> Setup GASS → Define MQL/Prospect criteria → Weekly performance report</div>
+                    <div class="item-meta">
+                        <span class="meta-tag timeline">📅 Month 2</span>
+                        <span class="meta-tag obj2">Objektif 2</span>
+                        <span class="meta-tag investment">💰 ~500K (3 months)</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="checklist-item" data-section="obj2">
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" class="checklist-checkbox" onchange="updateProgress()">
+                </div>
+                <div class="item-content">
+                    <div class="item-title">2. Conversion Funnel Dashboard</div>
+                    <div class="item-detail"><strong>Purpose:</strong> Real-time visibility, early warning system for bottlenecks</div>
+                    <div class="item-detail"><strong>Action Plan:</strong> Build Google Sheets dashboard (auto-pull dari GASS + internal app)</div>
+                    <div class="item-meta">
+                        <span class="meta-tag timeline">📅 Month 2</span>
+                        <span class="meta-tag obj2">Objektif 2</span>
+                        <span class="meta-tag investment">✅ Included in fee</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- B. Team Structure -->
+            <h3 class="subsection-title">B. Team Structure Optimization</h3>
+
+            <div class="checklist-item" data-section="obj2">
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" class="checklist-checkbox" onchange="updateProgress()">
+                </div>
+                <div class="item-content">
+                    <div class="item-title">3. Pembentukan Tim After-Sales Khusus</div>
+                    <div class="item-detail"><strong>Phase 1 (50 leads/day):</strong> Hire 1 After-Sales Coordinator (onboarding, benefit, teacher, event)</div>
+                    <div class="item-detail"><strong>Phase 2 (100 leads/day):</strong> Expand to 2-person team (split: onboarding vs retention)</div>
+                    <div class="item-meta">
+                        <span class="meta-tag timeline">📅 Prep M2-3, Hire M4-5</span>
+                        <span class="meta-tag obj2">Objektif 2</span>
+                        <span class="meta-tag investment">💰 5-7 juta/month</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- C. Technology & Automation -->
+            <h3 class="subsection-title">C. Technology & Automation</h3>
+
+            <div class="checklist-item" data-section="obj2">
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" class="checklist-checkbox" onchange="updateProgress()">
+                </div>
+                <div class="item-content">
+                    <div class="item-title">4. WhatsApp Business API</div>
+                    <div class="item-detail"><strong>Purpose:</strong> Prevent blocking (3000 contacts/month at 100 leads/day) + automation capability</div>
+                    <div class="item-detail"><strong>Action Plan:</strong> Month 3 (research providers) → Month 4 (pilot) → Month 5 (full deployment)</div>
+                    <div class="item-meta">
+                        <span class="meta-tag timeline">📅 Month 4-5</span>
+                        <span class="meta-tag obj2">Objektif 2</span>
+                        <span class="meta-tag investment">💰 3-5 juta setup + 1-2 juta/month</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- D. Process Scalability -->
+            <h3 class="subsection-title">D. Process Scalability</h3>
+
+            <div class="checklist-item" data-section="obj2">
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" class="checklist-checkbox" onchange="updateProgress()">
+                </div>
+                <div class="item-content">
+                    <div class="item-title">5. SOP Modularization for Delegation</div>
+                    <div class="item-detail"><strong>Purpose:</strong> Clear role separation, easy onboarding for new hires</div>
+                    <div class="item-detail"><strong>Action Plan:</strong> Break SOP into Module A (Lead Intake), B (Sales), C (After-Sales)</div>
+                    <div class="item-meta">
+                        <span class="meta-tag timeline">📅 Month 3</span>
+                        <span class="meta-tag obj2">Objektif 2</span>
+                        <span class="meta-tag investment">✅ Included in fee</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="checklist-item" data-section="obj2">
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" class="checklist-checkbox" onchange="updateProgress()">
+                </div>
+                <div class="item-content">
+                    <div class="item-title">6. Quality Assurance Mechanism (Multilayer)</div>
+                    <div class="item-detail"><strong>Level 1:</strong> Weekly chat audit (ongoing)</div>
+                    <div class="item-detail"><strong>Level 2:</strong> Monthly KPI review (Month 2)</div>
+                    <div class="item-detail"><strong>Level 3:</strong> Customer feedback loop - NPS survey (Month 3-4)</div>
+                    <div class="item-meta">
+                        <span class="meta-tag timeline">📅 Month 2-4 (Phased)</span>
+                        <span class="meta-tag obj2">Objektif 2</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Overall Progress Section -->
+        <section class="section-card">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span class="icon">📊</span>
+                    Overall Project Progress
+                </h2>
+            </div>
+
+            <div class="overall-progress">
+                <div class="progress-card obj1">
+                    <h3>🎯 Objektif 1: Perbaikan</h3>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressOverall1" style="width: 0%;"></div>
+                    </div>
+                    <p class="progress-stat"><span id="progressOverall1-text">0%</span> completed • 6 items total</p>
+                </div>
+
+                <div class="progress-card obj2">
+                    <h3>🚀 Objektif 2: Scale-Up</h3>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressOverall2" style="width: 0%;"></div>
+                    </div>
+                    <p class="progress-stat"><span id="progressOverall2-text">0%</span> completed • 6 items total</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Execution Results Section -->
+        <section class="section-card">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <span class="icon">📈</span>
+                    Execution Results & Findings
+                </h2>
+            </div>
+
+            <p style="color: var(--text-secondary); margin-bottom: 24px; line-height: 1.7;">
+                Section ini untuk dokumentasi hasil eksekusi Objektif 1 & 2. Tambahkan findings, metrics, dan insights di sini setelah implementasi.
+            </p>
+
+            <div class="results-section">
+                <div class="result-card obj1">
+                    <h3>🎯 Objektif 1: Execution Results</h3>
+                    <textarea 
+                        id="obj1Results" 
+                        class="result-textarea"
+                        placeholder="Tambahkan hasil eksekusi Objektif 1 di sini...
+
+Contoh:
+- Lead Scoring Framework: Implemented 15 Jan, conversion rate increased from X% to Y%
+- Autotext Revision: Completed 20 Jan, response time improved by Z%
+- SOP Compliance: Weekly audit shows 85% compliance rate
+- etc..."
+                        onchange="saveState()"></textarea>
+                </div>
+
+                <div class="result-card obj2">
+                    <h3>🚀 Objektif 2: Action Plan Status</h3>
+                    <textarea 
+                        id="obj2Results" 
+                        class="result-textarea"
+                        placeholder="Tambahkan status action plan Objektif 2 di sini...
+
+Contoh:
+- GASS Tracking: Setup scheduled for Month 2, provider shortlist ready
+- After-Sales Team: Job description prepared, interview process to start Month 3
+- WhatsApp API: Cost analysis completed, ROI projection shows 3x return
+- etc..."
+                        onchange="saveState()"></textarea>
+                </div>
+
+                <div class="result-card metrics">
+                    <h3>📊 Key Metrics & Impact</h3>
+                    <textarea 
+                        id="keyMetrics" 
+                        class="result-textarea"
+                        placeholder="Dokumentasi key metrics dan impact...
+
+Contoh:
+- Conversion Rate: Baseline 18% → Current 24% (+33% improvement)
+- Lead Quality (MQL Rate): Baseline 45% → Current 68% (+51% improvement)
+- Admin Efficiency: Time saved 12 hours/week through automation
+- Student Activation: Benefit claim rate increased from 65% to 82%
+- etc..."
+                        onchange="saveState()"></textarea>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // Update Progress Bars
+        function updateProgress() {
+            // Objektif 1
+            const obj1Items = document.querySelectorAll('.checklist-item[data-section="obj1"]');
+            const obj1Checked = document.querySelectorAll('.checklist-item[data-section="obj1"] input:checked');
+            const obj1Progress = obj1Items.length > 0 ? (obj1Checked.length / obj1Items.length) * 100 : 0;
+            
+            document.getElementById('progress1').style.width = obj1Progress + '%';
+            document.getElementById('progress1-text').textContent = Math.round(obj1Progress) + '%';
+            document.getElementById('progressOverall1').style.width = obj1Progress + '%';
+            document.getElementById('progressOverall1-text').textContent = Math.round(obj1Progress) + '%';
+
+            // Objektif 2
+            const obj2Items = document.querySelectorAll('.checklist-item[data-section="obj2"]');
+            const obj2Checked = document.querySelectorAll('.checklist-item[data-section="obj2"] input:checked');
+            const obj2Progress = obj2Items.length > 0 ? (obj2Checked.length / obj2Items.length) * 100 : 0;
+            
+            document.getElementById('progress2').style.width = obj2Progress + '%';
+            document.getElementById('progress2-text').textContent = Math.round(obj2Progress) + '%';
+            document.getElementById('progressOverall2').style.width = obj2Progress + '%';
+            document.getElementById('progressOverall2-text').textContent = Math.round(obj2Progress) + '%';
+
+            // Update completed styling
+            document.querySelectorAll('.checklist-item').forEach(item => {
+                const checkbox = item.querySelector('input[type="checkbox"]');
+                if (checkbox && checkbox.checked) {
+                    item.classList.add('completed');
+                } else {
+                    item.classList.remove('completed');
+                }
+            });
+
+            // Save state
+            saveState();
+        }
+
+        // Save state to localStorage
+        function saveState() {
+            const state = {
+                checkboxes: [],
+                obj1Results: document.getElementById('obj1Results')?.value || '',
+                obj2Results: document.getElementById('obj2Results')?.value || '',
+                keyMetrics: document.getElementById('keyMetrics')?.value || ''
+            };
+
+            document.querySelectorAll('.checklist-checkbox').forEach((checkbox) => {
+                state.checkboxes.push(checkbox.checked);
+            });
+
+            localStorage.setItem('fluentzActionPlanV2', JSON.stringify(state));
+        }
+
+        // Load state from localStorage
+        function loadState() {
+            const saved = localStorage.getItem('fluentzActionPlanV2');
+            if (saved) {
+                try {
+                    const state = JSON.parse(saved);
+
+                    document.querySelectorAll('.checklist-checkbox').forEach((checkbox, index) => {
+                        if (state.checkboxes && state.checkboxes[index]) {
+                            checkbox.checked = true;
+                        }
+                    });
+
+                    if (document.getElementById('obj1Results') && state.obj1Results) {
+                        document.getElementById('obj1Results').value = state.obj1Results;
+                    }
+                    if (document.getElementById('obj2Results') && state.obj2Results) {
+                        document.getElementById('obj2Results').value = state.obj2Results;
+                    }
+                    if (document.getElementById('keyMetrics') && state.keyMetrics) {
+                        document.getElementById('keyMetrics').value = state.keyMetrics;
+                    }
+
+                    updateProgress();
+                } catch (e) {
+                    console.error('Error loading saved state:', e);
+                }
+            }
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadState();
+        });
+    </script>
+</body>
+</html>
