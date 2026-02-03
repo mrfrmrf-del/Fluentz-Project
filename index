@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fluentz Business Process Audit - Dashboard & Action Plan</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab-button {
+            background: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .tab-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(0,0,0,0.15);
+        }
+
+        .tab-button.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Dashboard Styles */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .metric-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .metric-card h3 {
+            color: #666;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        .metric-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .metric-label {
+            color: #999;
+            font-size: 0.9em;
+        }
+
+        .metric-change {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .metric-change.positive {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .metric-change.negative {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .chart-container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .chart-container h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        /* Action Plan Checklist Styles */
+        .checklist-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .checklist-section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 20px;
+            margin-bottom: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border-left: 5px solid #ddd;
+            transition: all 0.3s;
+        }
+
+        .checklist-item:hover {
+            background: #e9ecef;
+            border-left-color: #667eea;
+        }
+
+        .checklist-item.completed {
+            background: #d4edda;
+            border-left-color: #28a745;
+        }
+
+        .checklist-checkbox {
+            width: 24px;
+            height: 24px;
+            margin-right: 15px;
+            margin-top: 2px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .checklist-content {
+            flex-grow: 1;
+        }
+
+        .checklist-content h4 {
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+
+        .checklist-content p {
+            color: #666;
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+
+        .checklist-meta {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .meta-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 5px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .meta-badge.timeline {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .meta-badge.objektif1 {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .meta-badge.objektif2 {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        .progress-bar {
+            background: #e9ecef;
+            height: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            height: 100%;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        /* Editable Input Styles */
+        .editable-input {
+            border: none;
+            background: transparent;
+            font-size: inherit;
+            font-weight: inherit;
+            color: inherit;
+            width: 100%;
+            padding: 5px;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+
+        .editable-input:focus {
+            outline: none;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+
+        .funnel-chart {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .funnel-stage {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+        }
+
+        .funnel-stage:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+
+        .funnel-stage h4 {
+            color: #333;
+            font-size: 1.1em;
+        }
+
+        .funnel-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .update-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            margin-top: 20px;
+            transition: all 0.3s;
+        }
+
+        .update-btn:hover {
+            background: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .tabs, .update-btn {
+                display: none;
+            }
+            .tab-content {
+                display: block !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>📊 Fluentz Business Process Audit</h1>
+            <p>Project Dashboard & Action Plan Tracker | Consultant: Rave | Period: February 2026</p>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-button active" onclick="switchTab('dashboard')">📈 Dashboard</button>
+            <button class="tab-button" onclick="switchTab('checklist')">✅ Action Plan Checklist</button>
+        </div>
+
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content active">
+            <!-- Key Metrics -->
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <h3>Total Leads/Day</h3>
+                    <div class="metric-value">
+                        <input type="number" class="editable-input" id="totalLeads" value="30" style="width: 80px;">
+                    </div>
+                    <div class="metric-label">Average daily volume</div>
+                </div>
+
+                <div class="metric-card">
+                    <h3>MQL Rate</h3>
+                    <div class="metric-value">
+                        <input type="number" class="editable-input" id="mqlRate" value="0" style="width: 80px;">%
+                    </div>
+                    <div class="metric-label">5+ bubble engagement</div>
+                    <div class="metric-change positive" id="mqlChange">Target: >60%</div>
+                </div>
+
+                <div class="metric-card">
+                    <h3>Conversion Rate</h3>
+                    <div class="metric-value">
+                        <input type="number" class="editable-input" id="conversionRate" value="0" style="width: 80px;">%
+                    </div>
+                    <div class="metric-label">Prospect → Deal</div>
+                    <div class="metric-change positive" id="conversionChange">Target: >25%</div>
+                </div>
+
+                <div class="metric-card">
+                    <h3>Benefit Activation</h3>
+                    <div class="metric-value">
+                        <input type="number" class="editable-input" id="benefitRate" value="0" style="width: 80px;">%
+                    </div>
+                    <div class="metric-label">Students claiming all benefits</div>
+                    <div class="metric-change positive">Target: >80%</div>
+                </div>
+
+                <div class="metric-card">
+                    <h3>Sales Cycle</h3>
+                    <div class="metric-value">
+                        <input type="number" class="editable-input" id="salesCycle" value="0" style="width: 80px;"> days
+                    </div>
+                    <div class="metric-label">First contact → Payment</div>
+                    <div class="metric-change positive">Target: <10 days</div>
+                </div>
+
+                <div class="metric-card">
+                    <h3>Team Size</h3>
+                    <div class="metric-value">5</div>
+                    <div class="metric-label">3 Admin + 1 Akademik + 1 Konten</div>
+                </div>
+            </div>
+
+            <!-- Conversion Funnel -->
+            <div class="chart-container">
+                <h2>Conversion Funnel</h2>
+                <div class="funnel-chart">
+                    <div class="funnel-stage">
+                        <div>
+                            <h4>📥 Total Leads</h4>
+                            <p style="color: #666; margin-top: 5px;">Raw incoming leads</p>
+                        </div>
+                        <div class="funnel-value" id="funnelLeads">900</div>
+                    </div>
+                    <div class="funnel-stage">
+                        <div>
+                            <h4>✅ MQL (Marketing Qualified)</h4>
+                            <p style="color: #666; margin-top: 5px;">5+ bubble engagement</p>
+                        </div>
+                        <div class="funnel-value" id="funnelMQL">540</div>
+                    </div>
+                    <div class="funnel-stage">
+                        <div>
+                            <h4>📋 Prospect</h4>
+                            <p style="color: #666; margin-top: 5px;">Catalog sent & engaged</p>
+                        </div>
+                        <div class="funnel-value" id="funnelProspect">360</div>
+                    </div>
+                    <div class="funnel-stage">
+                        <div>
+                            <h4>💰 Deal Closed</h4>
+                            <p style="color: #666; margin-top: 5px;">Payment confirmed</p>
+                        </div>
+                        <div class="funnel-value" id="funnelDeal">90</div>
+                    </div>
+                </div>
+                <button class="update-btn" onclick="updateFunnel()">🔄 Update Funnel Data</button>
+            </div>
+
+            <!-- Key Findings -->
+            <div class="chart-container">
+                <h2>🔍 Key Findings Summary</h2>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 20px;">
+                    <div style="background: #fff3cd; padding: 20px; border-radius: 10px; border-left: 5px solid #ffc107;">
+                        <h4 style="color: #856404; margin-bottom: 10px;">⚠️ Critical Gap</h4>
+                        <p style="color: #856404;">No lead qualification system → Admin waste time on spam/bouncing leads</p>
+                    </div>
+                    <div style="background: #f8d7da; padding: 20px; border-radius: 10px; border-left: 5px solid #dc3545;">
+                        <h4 style="color: #721c24; margin-bottom: 10px;">🚨 High Priority</h4>
+                        <p style="color: #721c24;">SOP exists but not enforced → Inconsistent execution quality</p>
+                    </div>
+                    <div style="background: #d4edda; padding: 20px; border-radius: 10px; border-left: 5px solid #28a745;">
+                        <h4 style="color: #155724; margin-bottom: 10px;">✅ Quick Win Available</h4>
+                        <p style="color: #155724;">GASS tracking can immediately identify: Bad leads vs weak sales</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Checklist Tab -->
+        <div id="checklist" class="tab-content">
+            <!-- Objektif 1 -->
+            <div class="checklist-section">
+                <h2>🎯 OBJEKTIF 1: Review & Perbaikan Proses Bisnis</h2>
+                <div style="margin-bottom: 20px;">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress1" style="width: 0%;">0%</div>
+                    </div>
+                </div>
+
+                <!-- Lead Management -->
+                <h3 style="color: #333; margin: 20px 0 15px 0; font-size: 1.2em;">A. Lead Management</h3>
+                
+                <div class="checklist-item" data-section="obj1">
+                    <input type="checkbox" class="checklist-checkbox" onchange="updateProgress()">
+                    <div class="checklist-content">
+                        <h4>1. Lead Scoring Framework</h4>
+                        <p><strong>Kecacatan:</strong> Tidak ada sistem kategorisasi leads (hot/warm/cold/spam)</p>
+                        <p><strong>Perbaikan:</strong> Implement BANT scoring system + qualifying questions script</p>
+                        <p><strong>Output:</strong> Lead scoring template (Google Sheets)</p>
+                        <div class="checklist-meta">
+                            <span class="meta-badge timeline">Week 1-2</span>
+                            <span class="meta-badge objektif1">Objektif 1</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item" data-section="obj1">
+                    <input type="checkbox" class="checklist-checkbox" onchange="updateProgress()">
+                    <div class="checklist-content">
+                        <h4>2. Autotext Revision</h4>
+                        <p><strong>Kecacatan:</strong> Autotext belum terstandarisasi, tidak konsisten antar admin</p>
+                        <p><strong>Perbaikan:</strong> Benchmark GE Bekasi winning templates, adapt ke Fluentz</p>
+                        <p><strong>Output:</strong> Autotext library (first response, follow-up, catalog, objection, closing)</p>
+                        <div class="checklist-meta">
+                            <span class="meta-badge timeline">Week 2</span>
+                            <span class="meta-badge objektif1">Objektif 1</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Admin Operations -->
+                <h3 style="color: #333; margin: 30px 0 15px 0; font-size: 1.2em;">B. Admin Operations</h3>
+
+                <div class="checklist-item" data-section="obj1">
+                    <input type="checkbox" class="checklist-checkbox" onchange="updateProgress()">
+                    <div class="checklist-content">
+                        <h4>3. End-to-End SOP Standardization</h4>
+                        <p><strong>Kecacatan:</strong> SOP ada (duplikasi GE) tapi tidak enforced</p>
+                        <p><strong>Perbaikan:</strong> Dokumentasi ulang SOP GE → Customize untuk Fluentz + formalize handoff checklist</p>
+                        <p><strong>Output:</strong> Complete SOP document (leads intake → after-sales)</p>
+                        <div class="checklist-meta">
+                            <span class="meta-badge timeline">Week 3</span>
+                            <span class="meta-badge objektif1">Objektif 1</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item" data-section="obj1">
+                    <input type="checkbox" class="checklist-checkbox" onchange="updateProgress()">
+                    <div class="checklist-content">
+                        <h4>4. Sales Training Video</h4>
+                        <p><strong>Kecacatan:</strong> Tidak ada standar training untuk sales skill</p>
+                        <p><strong>Perbaikan:</strong> Record 4-module video (qualification, objection, closing, Bekasi case study)</p>
+                        <p><strong>Output:</strong> Training video (~60 min) + role-play scripts</p>
+                        <div class="checklist-meta">
+                            <span class="meta-badge timeline">Week 3-4</span>
+                            <span class="meta-badge objektif1">Objektif 1</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item" data-section="obj1">
+                    <input type="checkbox" class="checklist-checkbox" onchange="updateProgress()">
+                    <div class="checklist-content">
+                        <h4>5. Weekly SOP Compliance Audit</h4>
+                        <p><strong>Kecacatan:</strong> Tidak ada mekanisme quality control</p>
+                        <p><strong>Perbaikan:</strong> Weekly spot-check (5 conversations/admin) + monthly performance review</p>
+                        <p><strong>Output:</strong> Audit checklist + feedback mechanism + monthly scorecard</p>
+                        <div class="checklist-meta">
+                            <span class="meta-badge timeline">Ongoing (Week 4+)</span>
+                            <span class="meta-badge objektif1">Objektif 1</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- After-Sales -->
+                <h3 style="color: #333; margin: 30px 0 15px 0; font-size: 1.2em;">C. After-Sales Process</h3>
+
+                <div class="checklist-item" data-section="obj1">
+                    <input type="checkbox" class="checklist-checkbox" onchange="updateProgress()">
+                    <div class="checklist-content">
+                        <h4>6. After-Sales Checklist & SOP</h4>
+                        <p><strong>Kecacatan:</strong> After-sales berjalan ad-hoc, tidak systematic</p>
+                        <p><strong>Perbaikan:</strong> Structured onboarding (Day 0-30), benefit tracking, handbook balasan English (Khalid)</p>
+                        <p><strong>Output:</strong> Onboarding checklist + After-sales SOP + Benefit tracker + Handbook</p>
+                        <div class="checklist-meta">
+                            <span class="meta-badge timeline">Week 3</span>
+                            <span class="meta-badge objektif1">Objektif 1</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Objektif 2 -->
+            <div class="checklist-section">
+                <h2>🚀 OBJEKTIF 2: Langkah Scale-Up (Action Plan Only)</h2>
+                <div style="margin-bottom: 20px;">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress2" style="width: 0%;">0%</div>
+                    </div>
+                </div>
+
+                <!-- Measurement Infrastructure -->
+                <h3 style="color: #333; margin: 20px 0 15px 0; font-size: 1.2em;">A. Measurement & Tracking Infrastructure</h3>
+
+                <div class="checklist-item" data-section="obj2">
+                    <input type="checkbox" class="checklist-checkbox" onchange="updateProgress()">
+                    <div class="checklist-content">
+                        <h4>1. GASS Lead Tracking Implementation</h4>
+                        <p><strong>Purpose:</strong> Track lead source + measure MQL (5+ bubbles) + identify: bad ads vs weak sales</p>
+                        <p><strong>Action Plan:</strong> Setup GASS → Define MQL/Prospect criteria → Weekly performance report</p>
+                        <p><strong>Investment:</strong> ~500K (3 months subscription)</p>
+                        <div class="checklist-meta">
+                            <span class="meta-badge timeline">Month 2</span>
+                            <span class="meta-badge objektif2">Objektif 2 - Scale-Up</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item" data-section="obj2">
+                    <input type="checkbox" class="checklist-checkbox" onchange="updateProgress()">
+                    <div class="checklist-content">
+                        <h4>2. Conversion Funnel Dashboard</h4>
+                        <p><strong>Purpose:</strong> Real-time visibility, early warning system for bottlenecks</p>
+                        <p><strong>Action Plan:</strong> Build Google Sheets dashboard (auto-pull dari GASS + internal app)</p>
+                        <p><strong>Investment:</strong> Included in consultant fee</p>
+                        <div class="checklist-meta">
+                            <span class="meta-badge timeline">Month 2</span>
+                            <span class="meta-badge objektif2">Objektif 2 - Scale-Up</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Team Structure -->
+                <h3 style="color: #333; margin: 30px 0 15px 0; font-size: 1.2em;">B. Team Structure Optimization</h3>
+
+                <div class="checklist-item" data-section="obj2">
+                    <input type="checkbox" class="checklist-checkbox" onchange="updateProgress()">
+                    <div class="checklist-content">
+                        <h4>3. Pembentukan Tim After-Sales Khusus</h4>
+                        <p><strong>Phase 1 (50 leads/day):</strong> Hire 1 After-Sales Coordinator (onboarding, benefit, teacher, event)</p>
+                        <p><strong>Phase 2 (100 leads/day):</strong> Expand to 2-person team (split: onboarding vs retention)</p>
+                        <p><strong>Investment:</strong> 5-7 juta/month (when hired)</p>
+                        <div class="checklist-meta">
+                            <span class="meta-badge timeline">Prep Month 2-3, Hire Month 4-5</span>
+                            <span class="meta-badge objektif2">Objektif 2 - Scale-Up</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Technology & Automation -->
+                <h3 style="color: #333; margin: 30px 0 15px 0; font-size: 1.2em;">C. Technology & Automation</h3>
+
+                <div class="checklist-item" data-section="obj2">
+                    <input type="checkbox" class="checklist-checkbox" onchange="updateProgress()">
+                    <div class="checklist-content">
+                        <h4>4. WhatsApp Business API</h4>
+                        <p><strong>Purpose:</strong> Prevent blocking (3000 contacts/month at 100 leads/day) + automation capability</p>
+                        <p><strong>Action Plan:</strong> Month 3 (research providers) → Month 4 (pilot) → Month 5 (full deployment)</p>
+                        <p><strong>Investment:</strong> 3-5 juta setup + 1-2 juta/month</p>
+                        <div class="checklist-meta">
+                            <span class="meta-badge timeline">Month 4-5</span>
+                            <span class="meta-badge objektif2">Objektif 2 - Scale-Up</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Process Scalability -->
+                <h3 style="color: #333; margin: 30px 0 15px 0; font-size: 1.2em;">D. Process Scalability</h3>
+
+                <div class="checklist-item" data-section="obj2">
+                    <input type="checkbox" class="checklist-checkbox" onchange="updateProgress()">
+                    <div class="checklist-content">
+                        <h4>5. SOP Modularization for Delegation</h4>
+                        <p><strong>Purpose:</strong> Clear role separation, easy onboarding for new hires</p>
+                        <p><strong>Action Plan:</strong> Break SOP into Module A (Lead Intake), B (Sales), C (After-Sales)</p>
+                        <p><strong>Investment:</strong> Included in consultant fee</p>
+                        <div class="checklist-meta">
+                            <span class="meta-badge timeline">Month 3</span>
+                            <span class="meta-badge objektif2">Objektif 2 - Scale-Up</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checklist-item" data-section="obj2">
+                    <input type="checkbox" class="checklist-checkbox" onchange="updateProgress()">
+                    <div class="checklist-content">
+                        <h4>6. Quality Assurance Mechanism (Multilayer)</h4>
+                        <p><strong>Level 1:</strong> Weekly chat audit (ongoing)</p>
+                        <p><strong>Level 2:</strong> Monthly KPI review (Month 2)</p>
+                        <p><strong>Level 3:</strong> Customer feedback loop - NPS survey (Month 3-4)</p>
+                        <div class="checklist-meta">
+                            <span class="meta-badge timeline">Month 2-4 (Phased)</span>
+                            <span class="meta-badge objektif2">Objektif 2 - Scale-Up</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Overall Progress -->
+            <div class="chart-container">
+                <h2>📊 Overall Project Progress</h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 20px;">
+                    <div>
+                        <h3 style="margin-bottom: 15px; color: #f57c00;">Objektif 1: Perbaikan</h3>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressOverall1" style="width: 0%;">0%</div>
+                        </div>
+                        <p style="color: #666; margin-top: 10px;">6 items total</p>
+                    </div>
+                    <div>
+                        <h3 style="margin-bottom: 15px; color: #7b1fa2;">Objektif 2: Scale-Up</h3>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressOverall2" style="width: 0%;">0%</div>
+                        </div>
+                        <p style="color: #666; margin-top: 10px;">6 items total</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab Switching
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Update Progress Bars
+        function updateProgress() {
+            // Objektif 1
+            const obj1Items = document.querySelectorAll('.checklist-item[data-section="obj1"]');
+            const obj1Checked = document.querySelectorAll('.checklist-item[data-section="obj1"] input:checked');
+            const obj1Progress = (obj1Checked.length / obj1Items.length) * 100;
+            
+            document.getElementById('progress1').style.width = obj1Progress + '%';
+            document.getElementById('progress1').textContent = Math.round(obj1Progress) + '%';
+            document.getElementById('progressOverall1').style.width = obj1Progress + '%';
+            document.getElementById('progressOverall1').textContent = Math.round(obj1Progress) + '%';
+
+            // Objektif 2
+            const obj2Items = document.querySelectorAll('.checklist-item[data-section="obj2"]');
+            const obj2Checked = document.querySelectorAll('.checklist-item[data-section="obj2"] input:checked');
+            const obj2Progress = (obj2Checked.length / obj2Items.length) * 100;
+            
+            document.getElementById('progress2').style.width = obj2Progress + '%';
+            document.getElementById('progress2').textContent = Math.round(obj2Progress) + '%';
+            document.getElementById('progressOverall2').style.width = obj2Progress + '%';
+            document.getElementById('progressOverall2').textContent = Math.round(obj2Progress) + '%';
+
+            // Update completed styling
+            document.querySelectorAll('.checklist-item').forEach(item => {
+                if (item.querySelector('input').checked) {
+                    item.classList.add('completed');
+                } else {
+                    item.classList.remove('completed');
+                }
+            });
+
+            // Save state to localStorage
+            saveState();
+        }
+
+        // Update Funnel Data
+        function updateFunnel() {
+            const totalLeads = parseInt(document.getElementById('totalLeads').value) || 30;
+            const mqlRate = parseInt(document.getElementById('mqlRate').value) || 0;
+            const conversionRate = parseInt(document.getElementById('conversionRate').value) || 0;
+
+            // Calculate funnel (assuming 30 days)
+            const monthlyLeads = totalLeads * 30;
+            const mqlCount = Math.round(monthlyLeads * (mqlRate / 100));
+            const prospectCount = Math.round(mqlCount * 0.67); // Assume 67% of MQL become prospects
+            const dealCount = Math.round(prospectCount * (conversionRate / 100));
+
+            document.getElementById('funnelLeads').textContent = monthlyLeads;
+            document.getElementById('funnelMQL').textContent = mqlCount + ' (' + mqlRate + '%)';
+            document.getElementById('funnelProspect').textContent = prospectCount;
+            document.getElementById('funnelDeal').textContent = dealCount + ' (' + conversionRate + '%)';
+
+            saveState();
+        }
+
+        // Save state to localStorage
+        function saveState() {
+            const state = {
+                totalLeads: document.getElementById('totalLeads').value,
+                mqlRate: document.getElementById('mqlRate').value,
+                conversionRate: document.getElementById('conversionRate').value,
+                benefitRate: document.getElementById('benefitRate').value,
+                salesCycle: document.getElementById('salesCycle').value,
+                checkboxes: []
+            };
+
+            document.querySelectorAll('.checklist-checkbox').forEach((checkbox, index) => {
+                state.checkboxes.push(checkbox.checked);
+            });
+
+            localStorage.setItem('fluentzDashboard', JSON.stringify(state));
+        }
+
+        // Load state from localStorage
+        function loadState() {
+            const saved = localStorage.getItem('fluentzDashboard');
+            if (saved) {
+                const state = JSON.parse(saved);
+                document.getElementById('totalLeads').value = state.totalLeads || 30;
+                document.getElementById('mqlRate').value = state.mqlRate || 0;
+                document.getElementById('conversionRate').value = state.conversionRate || 0;
+                document.getElementById('benefitRate').value = state.benefitRate || 0;
+                document.getElementById('salesCycle').value = state.salesCycle || 0;
+
+                document.querySelectorAll('.checklist-checkbox').forEach((checkbox, index) => {
+                    if (state.checkboxes && state.checkboxes[index]) {
+                        checkbox.checked = true;
+                    }
+                });
+
+                updateFunnel();
+                updateProgress();
+            }
+        }
+
+        // Initialize on load
+        window.onload = function() {
+            loadState();
+        };
+    </script>
+</body>
+</html>
